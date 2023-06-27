@@ -5,24 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>ru.practicum</groupId>
-        <artifactId>explore-with-me</artifactId>
+        <artifactId>stats-server</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>stats-server</artifactId>
-    <packaging>pom</packaging>
-    <modules>
-        <module>stats-client</module>
-        <module>stats-service</module>
-        <module>stats-dtos</module>
-    </modules>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
-        </dependency>
-    </dependencies>
+    <artifactId>stats-service</artifactId>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
