@@ -1,13 +1,16 @@
 package ru.practicum.explorewithme.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
+@Builder
 @Table(name = "statistics")
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,5 +22,6 @@ public class Statistic {
     private String app;
     private String uri;
     private String ip;
-    private String timestamp;
+    @Column(name = "timestamp_hit")
+    private LocalDateTime timestamp;
 }
