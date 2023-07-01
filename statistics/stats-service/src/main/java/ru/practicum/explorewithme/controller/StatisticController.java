@@ -29,7 +29,8 @@ public class StatisticController {
     public List<StatisticViewDto> getStatistics(@NotEmpty @RequestParam String start,
                                                 @NotEmpty @RequestParam String end,
                                                 @RequestParam(required = false) List<String> uris,
-                                                @RequestParam(required = false) Boolean unique) {
-        return statisticService.getStatistic(start, end, uris, unique);
+                                                @RequestParam(value = "unique", defaultValue = "false") String unique) {
+        Boolean uniqueParam = Boolean.valueOf(unique);
+        return statisticService.getStatistic(start, end, uris, uniqueParam);
     }
 }
