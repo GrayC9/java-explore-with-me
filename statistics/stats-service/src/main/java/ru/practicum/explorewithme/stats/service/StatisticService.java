@@ -1,4 +1,4 @@
-package ru.practicum.explorewithme.service;
+package ru.practicum.explorewithme.stats.service;
 
 import ru.practicum.explorewithme.StatisticInDto;
 import ru.practicum.explorewithme.StatisticViewDto;

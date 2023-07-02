@@ -1,4 +1,4 @@
-package ru.practicum.explorewithme.controller;
+package ru.practicum.explorewithme.stats.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -6,7 +6,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.explorewithme.StatisticInDto;
 import ru.practicum.explorewithme.StatisticViewDto;
-import ru.practicum.explorewithme.service.StatisticService;
+import ru.practicum.explorewithme.stats.service.StatisticService;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;

@@ -1,4 +1,4 @@
-package ru.practicum.explorewithme.service;
+package ru.practicum.explorewithme.stats.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -6,16 +6,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.explorewithme.StatisticInDto;
 import ru.practicum.explorewithme.StatisticViewDto;
-import ru.practicum.explorewithme.exception.StatisticValidationException;
-import ru.practicum.explorewithme.model.StatisticMapper;
-import ru.practicum.explorewithme.repository.StatisticRepository;
+import ru.practicum.explorewithme.stats.exception.StatisticValidationException;
+import ru.practicum.explorewithme.stats.model.StatisticMapper;
+import ru.practicum.explorewithme.stats.repository.StatisticRepository;
+import ru.practicum.explorewithme.stats.constant.Constant;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
-
-import static ru.practicum.explorewithme.constant.Constant.TIME_FORMAT;
 
 @Slf4j
 @Service
@@ -55,7 +54,7 @@ public class StatisticServiceImpl implements StatisticService {
 
     private LocalDateTime parseTimeParam(String time) {
         try {
-            return LocalDateTime.parse(time, DateTimeFormatter.ofPattern(TIME_FORMAT));
+            return LocalDateTime.parse(time, DateTimeFormatter.ofPattern(Constant.TIME_FORMAT));
         } catch (DateTimeParseException e) {
             throw new StatisticValidationException("Передан некорректный формат времени");
         }
