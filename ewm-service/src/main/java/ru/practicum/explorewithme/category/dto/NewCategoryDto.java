@@ -1,25 +1,20 @@
-package ru.practicum.explorewithme.user.dto;
+package ru.practicum.explorewithme.category.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class UserInDto {
+@AllArgsConstructor
+public class NewCategoryDto {
 
-    @Email
-    @NotEmpty
     @NotBlank
-    private String email;
     @NotEmpty
-    @NotBlank
     private String name;
 }

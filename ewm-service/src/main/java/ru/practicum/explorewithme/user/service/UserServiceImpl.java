@@ -25,8 +25,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserOutDto> findUsers(List<Long> ids, Integer from, Integer size) {
-        Pageable pageRequest = PageRequest.of(from, size);
+        Pageable pageRequest = PageRequest.of(from / size, size);
         List<User> users = userRepository.findByIdIn(ids, pageRequest);
+        log.info("Выполняется запрос на поиск пользователей. Выбранные id: {}", ids);
         return UserMapper.toOutDtos(users);
     }
 
@@ -34,6 +35,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserOutDto addUser(UserInDto inDto) {
         User user = UserMapper.toUser(inDto);
+        log.info("Добавление нового пользователя");
         return UserMapper.toUserOutDto(userRepository.save(user));
     }
 
@@ -44,5 +46,6 @@ public class UserServiceImpl implements UserService {
             throw new DataValidationException("Пользователя с заданным id не существует");
         }
         userRepository.deleteById(userId);
+        log.info("Пользователь с id {} удалён", userId);
     }
 }
