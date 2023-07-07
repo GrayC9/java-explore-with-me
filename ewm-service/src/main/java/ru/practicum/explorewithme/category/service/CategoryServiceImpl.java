@@ -13,7 +13,6 @@ import ru.practicum.explorewithme.category.model.Category;
 import ru.practicum.explorewithme.category.repository.CategoryRepository;
 import ru.practicum.explorewithme.exception.CategoryNotFoundException;
 import ru.practicum.explorewithme.exception.DataValidationException;
-import ru.practicum.explorewithme.exception.NameConflictException;
 
 import java.util.List;
 
@@ -28,9 +27,6 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public CategoryDto addCategory(NewCategoryDto newCategoryDto) {
-        if (categoryRepository.findCategoryNames().contains(newCategoryDto.getName())) {
-            throw new NameConflictException("Выбранное имя для категории уже используется");
-        }
         log.info("Добавление новой категории.");
         Category category = CategoryMapper.toCategory(newCategoryDto);
         return CategoryMapper.toCategoryDto(categoryRepository.save(category));
@@ -51,9 +47,6 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryDto updateCategory(Long categoryId, CategoryDto categoryDto) {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new CategoryNotFoundException("Категории с выбранным id не существует"));
-        if (categoryRepository.findCategoryNames().contains(categoryDto.getName())) {
-            throw new NameConflictException("Выбранное имя для категории уже используется");
-        }
         category.setName(categoryDto.getName());
         log.info("Обновление категории с id {}", categoryId);
         return CategoryMapper.toCategoryDto(categoryRepository.save(category));
