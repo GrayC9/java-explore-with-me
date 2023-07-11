@@ -63,8 +63,13 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryDto findCategoryById(Long categoryId) {
         log.info("Выполняется поиск категории по id {}", categoryId);
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new CategoryNotFoundException("Категории с выбранным id не существует"));
+        Category category = findCategory(categoryId);
         return CategoryMapper.toCategoryDto(category);
+    }
+
+    @Override
+    public Category findCategory(Long categoryId) {
+        return categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new CategoryNotFoundException("Категории с выбранным id не существует"));
     }
 }

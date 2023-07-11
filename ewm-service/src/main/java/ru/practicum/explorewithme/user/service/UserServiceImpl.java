@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.explorewithme.exception.DataValidationException;
+import ru.practicum.explorewithme.exception.UserNotFoundException;
 import ru.practicum.explorewithme.user.dto.UserInDto;
 import ru.practicum.explorewithme.user.dto.UserMapper;
 import ru.practicum.explorewithme.user.dto.UserOutDto;
@@ -47,5 +48,11 @@ public class UserServiceImpl implements UserService {
         }
         userRepository.deleteById(userId);
         log.info("Пользователь с id {} удалён", userId);
+    }
+
+    @Override
+    public User findUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("Пользователь с id" + userId + "не найден"));
     }
 }

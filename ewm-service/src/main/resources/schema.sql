@@ -30,7 +30,7 @@
   loc_lon DOUBLE PRECISION                  NOT NULL,
   participant_limit INTEGER                 NOT NULL,
   request_moderation BOOLEAN                NOT NULL,
-  published_on TIMESTAMP WITHOUT TIME ZONE  NOT NULL,
+  published_on TIMESTAMP WITHOUT TIME ZONE,
   state VARCHAR(30)                         NOT NULL,
   CONSTRAINT fk_events_to_categories FOREIGN KEY(category_id) REFERENCES categories(id),
   CONSTRAINT fk_events_to_users FOREIGN KEY(initiator_id) REFERENCES users(id));
