@@ -2,6 +2,7 @@ package ru.practicum.explorewithme.event.service;
 
 import ru.practicum.explorewithme.event.dto.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 public interface EventService {
@@ -12,4 +13,6 @@ public interface EventService {
     EventFullDto userUpdateEvent(Long userId, Long eventId, UpdateEventUserRequest eventUpdate);
     EventFullDto adminUpdateEvent(Long eventId, UpdateEventAdminRequest eventUpdate);
     List<EventFullDto> findEventsByAdmin(EventAdminParam eventAdminParam);
+    List<EventShortDto> findEventsByPublic(EventUserParam eventUserParam, HttpServletRequest request);
+    EventFullDto findPublishedEventById(Long eventId, HttpServletRequest request);
 }

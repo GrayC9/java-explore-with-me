@@ -47,4 +47,6 @@ public class Event {
     private LocalDateTime publishedOn;
     @Enumerated(value = EnumType.STRING)
     private EventState state;
+    @Column(name = "confirmed_requests")
+    private Integer confirmedRequests;
 }

@@ -32,6 +32,7 @@
   request_moderation BOOLEAN                NOT NULL,
   published_on TIMESTAMP WITHOUT TIME ZONE,
   state VARCHAR(30)                         NOT NULL,
+  confirmed_requests INTEGER,
   CONSTRAINT fk_events_to_categories FOREIGN KEY(category_id) REFERENCES categories(id),
   CONSTRAINT fk_events_to_users FOREIGN KEY(initiator_id) REFERENCES users(id));
 

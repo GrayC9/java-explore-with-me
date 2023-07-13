@@ -7,10 +7,9 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import ru.practicum.explorewithme.event.model.Event;
+import ru.practicum.explorewithme.event.model.EventState;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Repository
 public interface  EventRepository extends JpaRepository<Event, Long>, JpaSpecificationExecutor<Event> {
@@ -23,9 +22,5 @@ public interface  EventRepository extends JpaRepository<Event, Long>, JpaSpecifi
 
     Optional<Event> findByIdAndInitiatorId(Long eventId, Long userId);
 
-    @Query(value = "select * " +
-            "from  events " +
-            "where id = ?1 " +
-            "order by id asc ", nativeQuery = true)
-    List<Event> findAllEventsByIds(Set<Long> ids);
+    Optional<Event> findByIdAndState(Long eventId, EventState state);
 }

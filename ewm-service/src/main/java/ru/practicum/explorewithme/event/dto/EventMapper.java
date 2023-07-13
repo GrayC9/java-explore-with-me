@@ -9,9 +9,10 @@ import ru.practicum.explorewithme.user.dto.UserMapper;
 import ru.practicum.explorewithme.user.model.User;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static ru.practicum.explorewithme.constant.Constant.FORMATTER;
 
@@ -58,15 +59,37 @@ public class EventMapper {
         return fullDto;
     }
 
-    public static List<EventFullDto> toFullDtos(Collection<Event> events) {
-        List<EventFullDto> dtos = new ArrayList<>();
-        for (Event event : events) {
-            dtos.add(toEventFullDto(event));
+    public static EventFullDto toEventFullDtoWithViews(Event event, Map<Long, Long> eventViews) {
+        EventFullDto fullDto = EventFullDto.builder()
+                .id(event.getId())
+                .annotation(event.getAnnotation())
+                .category(CategoryMapper.toCategoryDto(event.getCategory()))
+                .confirmedRequests(0)
+                .createdOn(event.getCreatedOn().format(FORMATTER))
+                .description(event.getDescription())
+                .eventDate(event.getEventDate().format(FORMATTER))
+                .initiator(UserMapper.toUserShortDto(event.getInitiator()))
+                .location(new Location(event.getLat(), event.getLon()))
+                .paid(event.getIsPaid())
+                .participantLimit(event.getParticipantLimit())
+                .requestModeration(event.getRequestModeration())
+                .state(event.getState().toString())
+                .title(event.getTitle())
+                .views(eventViews.get(event.getId()))
+                .build();
+        if (event.getPublishedOn() != null) {
+            fullDto.setPublishedOn(event.getPublishedOn().format(FORMATTER));
         }
-        return dtos;
+        return fullDto;
     }
 
-    public static EventShortDto toEventShortDto(Event event) {
+    public static List<EventFullDto> toFullDtos(Collection<Event> events, Map<Long, Long> eventViews) {
+        return events.stream()
+                .map(event -> toEventFullDtoWithViews(event, eventViews))
+                .collect(Collectors.toList());
+    }
+
+    public static EventShortDto toEventShortDto(Event event, Map<Long, Long> eventViews) {
         return EventShortDto.builder()
                 .annotation(event.getAnnotation())
                 .category(CategoryMapper.toCategoryDto(event.getCategory()))
@@ -75,6 +98,13 @@ public class EventMapper {
                 .initiator(UserMapper.toUserShortDto(event.getInitiator()))
                 .paid(event.getIsPaid())
                 .title(event.getTitle())
+                .views(eventViews.get(event.getId()))
                 .build();
+    }
+
+    public static List<EventShortDto> toShortDtos(List<Event> events, Map<Long, Long> eventViews) {
+        return events.stream()
+                .map(event -> toEventShortDto(event, eventViews))
+                .collect(Collectors.toList());
     }
 }
