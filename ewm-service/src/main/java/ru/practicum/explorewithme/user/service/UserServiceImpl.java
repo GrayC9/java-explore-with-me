@@ -26,8 +26,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserOutDto> findUsers(List<Long> ids, Integer from, Integer size) {
+        List<User> users;
         Pageable pageRequest = PageRequest.of(from / size, size);
-        List<User> users = userRepository.findByIdIn(ids, pageRequest);
+        if (ids == null || ids.isEmpty()) {
+            users = userRepository.findAll(pageRequest).getContent();
+        } else {
+            users = userRepository.findByIdIn(ids, pageRequest);
+        }
         log.info("Выполняется запрос на поиск пользователей. Выбранные id: {}", ids);
         return UserMapper.toOutDtos(users);
     }

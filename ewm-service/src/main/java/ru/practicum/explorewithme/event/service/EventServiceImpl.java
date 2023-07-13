@@ -100,9 +100,9 @@ public class EventServiceImpl implements EventService {
         Event updated;
         Map<Long, Long> views;
         Event oldEvent = findEventById(eventId);
-        LocalDateTime updateEventTime = LocalDateTime.parse(eventUpdate.getEventDate(), FORMATTER);
+        LocalDateTime updateTime = LocalDateTime.parse(eventUpdate.getEventDate(), FORMATTER);
 
-        validateEventTimeByAdmin(updateEventTime);
+        validateEventTimeByAdmin(updateTime);
         validateEventState(oldEvent.getState());
         updateEventByAdminStateAction(oldEvent, eventUpdate);
         updated = eventRepository.save(oldEvent);

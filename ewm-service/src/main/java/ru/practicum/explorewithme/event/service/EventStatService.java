@@ -51,9 +51,15 @@ public class EventStatService {
             } catch (JsonProcessingException e) {
                 throw new RuntimeException("Ошибка при загрузке данных из сервиса статистики");
             }
-            for (Long event : events) {
-                eventsViews.put(event, stats.get(counter).getHits());
-                counter++;
+            if (stats.isEmpty()) {
+                for (Long event : events) {
+                    eventsViews.put(event, 0L);
+                }
+            } else {
+                for (Long event : events) {
+                    eventsViews.put(event, stats.get(counter).getHits());
+                    counter++;
+                }
             }
         }
         return eventsViews;
