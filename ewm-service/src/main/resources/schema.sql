@@ -48,8 +48,7 @@
   CREATE TABLE IF NOT EXISTS compilations (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   is_pinned BOOLEAN                         NOT NULL,
-  title VARCHAR(50)                         NOT NULL,
-  views BIGINT                              NOT NULL);
+  title VARCHAR(50)                         NOT NULL);
 
   CREATE TABLE IF NOT EXISTS compilation_events (
   compilation_id BIGINT                     NOT NULL,
