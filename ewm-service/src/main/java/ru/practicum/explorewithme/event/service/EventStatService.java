@@ -40,7 +40,7 @@ public class EventStatService {
             uris.add(EVENT_URI + id);
         }
         ResponseEntity<Object> response = statisticClient.getStatistics(LocalDateTime.now().minusDays(100).format(FORMATTER),
-                LocalDateTime.now().format(FORMATTER), uris, false);
+                LocalDateTime.now().format(FORMATTER), uris, true);
         Object body = response.getBody();
         if (body != null) {
             String json = gson.toJson(body);

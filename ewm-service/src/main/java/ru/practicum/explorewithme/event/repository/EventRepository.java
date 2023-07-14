@@ -12,7 +12,7 @@ import ru.practicum.explorewithme.event.model.EventState;
 import java.util.Optional;
 
 @Repository
-public interface  EventRepository extends JpaRepository<Event, Long>, JpaSpecificationExecutor<Event> {
+public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecificationExecutor<Event> {
 
     @Query(value = "select * " +
             "from  events " +
