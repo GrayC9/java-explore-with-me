@@ -16,6 +16,13 @@ import ru.practicum.explorewithme.event.repository.EventRepository;
 import ru.practicum.explorewithme.exception.DataValidationException;
 import ru.practicum.explorewithme.exception.EventNotFoundException;
 import ru.practicum.explorewithme.exception.InvalidRequestException;
+import ru.practicum.explorewithme.request.dto.EventRequestStatusUpdateRequest;
+import ru.practicum.explorewithme.request.dto.EventRequestStatusUpdateResult;
+import ru.practicum.explorewithme.request.dto.ParticipationRequestDto;
+import ru.practicum.explorewithme.request.dto.RequestMapper;
+import ru.practicum.explorewithme.request.model.Request;
+import ru.practicum.explorewithme.request.model.RequestStatus;
+import ru.practicum.explorewithme.request.repository.RequestRepository;
 import ru.practicum.explorewithme.user.model.User;
 import ru.practicum.explorewithme.user.service.UserService;
 
@@ -41,6 +48,7 @@ public class EventServiceImpl implements EventService {
     private final UserService userService;
     private final CategoryService categoryService;
     private final EventStatService eventStatService;
+    private final RequestRepository requestRepository;
 
     @Override
     public List<EventShortDto> findEventsOfUser(Long userId, Integer from, Integer size) {
@@ -168,8 +176,9 @@ public class EventServiceImpl implements EventService {
             List<Predicate> predicates = new ArrayList<>();
             predicates.add(criteriaBuilder.equal(root.get("state"), EventState.PUBLISHED));
             if (eventUserParam.getText() != null) {
-                predicates.add(criteriaBuilder.or(criteriaBuilder.like(root.get("annotation"), eventUserParam.getText().toLowerCase()),
-                        criteriaBuilder.like(root.get("description"), eventUserParam.getText().toLowerCase())));
+                predicates.add(criteriaBuilder.or(criteriaBuilder.like(root.get("annotation"),
+                                "%" + eventUserParam.getText().toLowerCase() + "%"),
+                        criteriaBuilder.like(root.get("description"), "%" + eventUserParam.getText().toLowerCase() + "%")));
             }
             if (eventUserParam.getCategories() != null) {
                 CriteriaBuilder.In<Long> categoriesClause = criteriaBuilder.in(root.get("category"));
@@ -204,6 +213,62 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new EventNotFoundException("Опубликованного события с указанным id не найдено"));
         log.info("Выполнен публичный поиск опубликованного события с id {}", eventId);
         return EventMapper.toEventFullDtoWithViews(event, views);
+    }
+
+    @Override
+    public List<ParticipationRequestDto> findUserEventRequests(Long userId, Long eventId) {
+        User owner = userService.findUserById(userId);
+        Event event = findEventById(eventId);
+        List<Request> eventRequests = requestRepository.findAllByEventId(eventId);
+        log.info("Выполнен поиск заявок на участие в событии с id {} пользователя {}", eventId, userId);
+        return RequestMapper.toDtos(eventRequests);
+    }
+
+    @Override
+    @Transactional
+    public EventRequestStatusUpdateResult changeEventRequestsStatus(Long userId, Long eventId,
+                                                                    EventRequestStatusUpdateRequest statusUpdate) {
+        int requestsCount = statusUpdate.getRequestIds().size();
+        User owner = userService.findUserById(userId);
+        Event event = findEventById(eventId);
+        List<Request> confirmed = new ArrayList<>();
+        List<Request> rejected = new ArrayList<>();
+        RequestStatus status = RequestStatus.valueOf(statusUpdate.getStatus());
+        List<Request> requests = requestRepository.findByIdInAndStatus(statusUpdate.getRequestIds(), RequestStatus.PENDING);
+
+        if (!Objects.equals(userId, event.getInitiator().getId())) {
+            throw new InvalidRequestException("У пользователя с id " + userId + " нет события с id " + eventId);
+        }
+        switch (status) {
+            case CONFIRMED:
+                if (event.getParticipantLimit() == 0 || !event.getRequestModeration()
+                        || event.getParticipantLimit() > event.getConfirmedRequests() + requestsCount) {
+                    requests.forEach(request -> request.setStatus(RequestStatus.CONFIRMED));
+                    event.setConfirmedRequests(event.getConfirmedRequests() + requestsCount);
+                } else if (event.getParticipantLimit() <= event.getConfirmedRequests()) {
+                    throw new InvalidRequestException("Достигнут лимит заявок на участие в событии");
+                } else {
+                    for (Request request : requests) {
+                        if (event.getParticipantLimit() > event.getConfirmedRequests()) {
+                            request.setStatus(RequestStatus.CONFIRMED);
+                            event.setConfirmedRequests(event.getConfirmedRequests() + 1);
+                            confirmed.add(request);
+                        } else {
+                            request.setStatus(RequestStatus.REJECTED);
+                            rejected.add(request);
+                        }
+                    }
+                }
+            case REJECTED:
+                requests.forEach(request -> request.setStatus(RequestStatus.REJECTED));
+                rejected.addAll(requests);
+        }
+        eventRepository.save(event);
+        requestRepository.saveAll(requests);
+        EventRequestStatusUpdateResult result = new EventRequestStatusUpdateResult(RequestMapper.toDtos(confirmed),
+                RequestMapper.toDtos(rejected));
+        log.info("Обновлены статусы заявок у события с id {}. Статус {}", eventId, status);
+        return result;
     }
 
     private Sort getEventSort(String eventSort) {

@@ -8,6 +8,9 @@ import ru.practicum.explorewithme.StatisticClient;
 import ru.practicum.explorewithme.StatisticInDto;
 import ru.practicum.explorewithme.event.dto.*;
 import ru.practicum.explorewithme.event.service.EventService;
+import ru.practicum.explorewithme.request.dto.EventRequestStatusUpdateRequest;
+import ru.practicum.explorewithme.request.dto.EventRequestStatusUpdateResult;
+import ru.practicum.explorewithme.request.dto.ParticipationRequestDto;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -96,5 +99,17 @@ public class EventController {
                 LocalDateTime.now());
         statisticClient.postHit(statisticInDto);
         return eventService.findPublishedEventById(id, request);
+    }
+
+    @GetMapping("/users/{userId}/events/{eventId}/requests")
+    public List<ParticipationRequestDto> findUserEventRequests(@PathVariable Long userId, @PathVariable Long eventId) {
+        return eventService.findUserEventRequests(userId, eventId);
+    }
+
+    @PatchMapping(value = "/users/{userId}/events/{eventId}/requests")
+    public EventRequestStatusUpdateResult changeEventRequestsStatus(@PathVariable Long userId,
+                                                                    @PathVariable Long eventId,
+                                                                    @Valid @RequestBody EventRequestStatusUpdateRequest updateRequest) {
+        return eventService.changeEventRequestsStatus(userId, eventId, updateRequest);
     }
 }

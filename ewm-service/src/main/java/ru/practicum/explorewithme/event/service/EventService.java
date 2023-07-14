@@ -1,6 +1,9 @@
 package ru.practicum.explorewithme.event.service;
 
 import ru.practicum.explorewithme.event.dto.*;
+import ru.practicum.explorewithme.request.dto.EventRequestStatusUpdateRequest;
+import ru.practicum.explorewithme.request.dto.EventRequestStatusUpdateResult;
+import ru.practicum.explorewithme.request.dto.ParticipationRequestDto;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -15,4 +18,6 @@ public interface EventService {
     List<EventFullDto> findEventsByAdmin(EventAdminParam eventAdminParam);
     List<EventShortDto> findEventsByPublic(EventUserParam eventUserParam, HttpServletRequest request);
     EventFullDto findPublishedEventById(Long eventId, HttpServletRequest request);
+    List<ParticipationRequestDto> findUserEventRequests(Long userId, Long eventId);
+    EventRequestStatusUpdateResult changeEventRequestsStatus(Long userId, Long eventId, EventRequestStatusUpdateRequest request);
 }
