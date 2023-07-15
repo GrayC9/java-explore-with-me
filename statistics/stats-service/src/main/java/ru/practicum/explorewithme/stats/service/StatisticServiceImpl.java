@@ -37,6 +37,9 @@ public class StatisticServiceImpl implements StatisticService {
         LocalDateTime endTime = parseTimeParam(end);
         List<StatisticViewDto> dtos;
 
+        if (startTime.isAfter(endTime)) {
+            throw new StatisticValidationException("Начало временного промежутка не может быть позже конца");
+        }
         if (uris != null) {
             if (unique) {
                 dtos = statisticRepository.findAllStatisticsByTimeAndListOfUrisAndUniqueIp(startTime, endTime, uris);
