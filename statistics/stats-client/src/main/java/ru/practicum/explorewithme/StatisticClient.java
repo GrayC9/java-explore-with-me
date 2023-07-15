@@ -38,6 +38,6 @@ public class StatisticClient extends BaseClient {
                 "end", end,
                 "unique", unique
         );
-        return get("/stats?start={start}&end={end}" + url +"&unique={unique}", params);
+        return get("/stats?start={start}&end={end}" + url + "&unique={unique}", params);
     }
 }
