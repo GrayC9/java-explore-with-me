@@ -2,10 +2,12 @@ package ru.practicum.explorewithme.event.model;
 
 import lombok.*;
 import ru.practicum.explorewithme.category.model.Category;
+import ru.practicum.explorewithme.compilation.model.Compilation;
 import ru.practicum.explorewithme.user.model.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -49,4 +51,6 @@ public class Event {
     private EventState state;
     @Column(name = "confirmed_requests")
     private Integer confirmedRequests;
+    @ManyToMany(mappedBy = "events")
+    private List<Compilation> compilations;
 }

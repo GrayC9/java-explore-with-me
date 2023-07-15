@@ -7,6 +7,7 @@ import ru.practicum.explorewithme.event.model.Location;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 
 @Data
@@ -32,14 +33,11 @@ public class NewEventDto {
     @NotNull
     private Location location;
 
-    @NotNull
     private Boolean paid;
 
-    @NotNull
-    @Positive
+    @PositiveOrZero
     private Integer participantLimit;
 
-    @NotNull
     private Boolean requestModeration;
 
     @NotNull

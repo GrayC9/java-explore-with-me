@@ -19,21 +19,37 @@ import static ru.practicum.explorewithme.constant.Constant.FORMATTER;
 public class EventMapper {
 
     public static Event toNewEvent(NewEventDto newEventDto, User user, Category category) {
-        return Event.builder()
+        Event event = Event.builder()
                 .initiator(user)
                 .annotation(newEventDto.getAnnotation())
                 .description(newEventDto.getDescription())
                 .category(category)
                 .eventDate(LocalDateTime.parse(newEventDto.getEventDate(), FORMATTER))
-                .isPaid(newEventDto.getPaid())
                 .title(newEventDto.getTitle())
                 .lon(newEventDto.getLocation().getLon())
                 .lat(newEventDto.getLocation().getLat())
-                .participantLimit(newEventDto.getParticipantLimit())
-                .requestModeration(newEventDto.getRequestModeration())
                 .state(EventState.PENDING)
                 .createdOn(LocalDateTime.now())
+                .confirmedRequests(0)
                 .build();
+
+        if (newEventDto.getPaid() != null) {
+            event.setIsPaid(newEventDto.getPaid());
+        } else {
+            event.setIsPaid(false);
+        }
+        if (newEventDto.getRequestModeration() != null) {
+            event.setRequestModeration(newEventDto.getRequestModeration());
+        } else {
+            event.setRequestModeration(true);
+        }
+        if (newEventDto.getParticipantLimit() != null) {
+            event.setParticipantLimit(newEventDto.getParticipantLimit());
+        } else {
+            event.setParticipantLimit(0);
+        }
+
+        return event;
     }
 
     public static EventFullDto toEventFullDto(Event event) {
@@ -64,7 +80,7 @@ public class EventMapper {
                 .id(event.getId())
                 .annotation(event.getAnnotation())
                 .category(CategoryMapper.toCategoryDto(event.getCategory()))
-                .confirmedRequests(0)
+                .confirmedRequests(event.getConfirmedRequests())
                 .createdOn(event.getCreatedOn().format(FORMATTER))
                 .description(event.getDescription())
                 .eventDate(event.getEventDate().format(FORMATTER))

@@ -3,6 +3,7 @@ package ru.practicum.explorewithme.event.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.explorewithme.StatisticClient;
 import ru.practicum.explorewithme.StatisticInDto;
@@ -20,6 +21,7 @@ import java.util.List;
 import static ru.practicum.explorewithme.constant.Constant.SERVICE_ID;
 import static ru.practicum.explorewithme.constant.Constant.TIME_FORMAT;
 
+@Validated
 @RestController
 @RequiredArgsConstructor
 public class EventController {

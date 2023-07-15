@@ -1,12 +1,12 @@
 package ru.practicum.explorewithme.request.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.explorewithme.request.dto.ParticipationRequestDto;
 import ru.practicum.explorewithme.request.service.RequestService;
 
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -23,10 +23,10 @@ public class RequestController {
     }
 
     @PostMapping(value = "/users/{userId}/requests")
+    @ResponseStatus(HttpStatus.CREATED)
     public ParticipationRequestDto addRequest(@PathVariable Long userId,
-                                              @NotNull @RequestParam Long eventId,
-                                              @Valid @RequestBody ParticipationRequestDto requestDto) {
-        return requestService.addRequest(userId, eventId, requestDto);
+                                              @NotNull @RequestParam Long eventId) {
+        return requestService.addRequest(userId, eventId);
     }
 
     @PatchMapping(value = "/users/{userId}/requests/{requestId}/cancel")

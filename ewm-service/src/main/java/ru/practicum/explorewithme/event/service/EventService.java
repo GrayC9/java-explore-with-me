@@ -1,6 +1,7 @@
 package ru.practicum.explorewithme.event.service;
 
 import ru.practicum.explorewithme.event.dto.*;
+import ru.practicum.explorewithme.event.model.Event;
 import ru.practicum.explorewithme.request.dto.EventRequestStatusUpdateRequest;
 import ru.practicum.explorewithme.request.dto.EventRequestStatusUpdateResult;
 import ru.practicum.explorewithme.request.dto.ParticipationRequestDto;
@@ -20,4 +21,5 @@ public interface EventService {
     EventFullDto findPublishedEventById(Long eventId, HttpServletRequest request);
     List<ParticipationRequestDto> findUserEventRequests(Long userId, Long eventId);
     EventRequestStatusUpdateResult changeEventRequestsStatus(Long userId, Long eventId, EventRequestStatusUpdateRequest request);
+    List<Event> findAllByIds(List<Long> ids);
 }

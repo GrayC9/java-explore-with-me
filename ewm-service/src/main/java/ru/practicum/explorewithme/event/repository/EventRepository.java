@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import ru.practicum.explorewithme.event.model.Event;
 import ru.practicum.explorewithme.event.model.EventState;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -23,4 +24,6 @@ public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecific
     Optional<Event> findByIdAndInitiatorId(Long eventId, Long userId);
 
     Optional<Event> findByIdAndState(Long eventId, EventState state);
+
+    List<Event> findAllByIdIn(List<Long> ids);
 }
