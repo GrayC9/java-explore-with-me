@@ -29,39 +29,39 @@ public class EventStatService {
     private final ObjectMapper objectMapper;
     private final Gson gson;
 
-public Map<Long, Long> getEventsViews(List<Long> events) {
-    List<StatisticViewDto> stats;
-    Map<Long, Long> eventsViews = new HashMap<>();
-    List<String> uris = new ArrayList<>();
+    public Map<Long, Long> getEventsViews(List<Long> events) {
+        List<StatisticViewDto> stats;
+        Map<Long, Long> eventsViews = new HashMap<>();
+        List<String> uris = new ArrayList<>();
 
-    if (events == null || events.isEmpty()) {
-        return eventsViews;
-    }
-    for (Long id : events) {
-        uris.add(EVENT_URI + id);
-    }
-    ResponseEntity<Object> response = statisticClient.getStatistics(LocalDateTime.now().minusDays(100).format(FORMATTER),
-            LocalDateTime.now().format(FORMATTER), uris, true);
-    Object body = response.getBody();
-    if (body != null) {
-        String json = gson.toJson(body);
-        TypeReference<List<StatisticViewDto>> typeRef = new TypeReference<>() {
-        };
-        try {
-            stats = objectMapper.readValue(json, typeRef);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("Ошибка при загрузке данных из сервиса статистики");
+        if (events == null || events.isEmpty()) {
+            return eventsViews;
         }
+        for (Long id : events) {
+            uris.add(EVENT_URI + id);
+        }
+        ResponseEntity<Object> response = statisticClient.getStatistics(LocalDateTime.now().minusDays(100).format(FORMATTER),
+                LocalDateTime.now().format(FORMATTER), uris, true);
+        Object body = response.getBody();
+        if (body != null) {
+            String json = gson.toJson(body);
+            TypeReference<List<StatisticViewDto>> typeRef = new TypeReference<>() {
+            };
+            try {
+                stats = objectMapper.readValue(json, typeRef);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException("Ошибка при загрузке данных из сервиса статистики");
+            }
             for (Long event : events) {
                 eventsViews.put(event, 0L);
             }
-        if (!stats.isEmpty()) {
-            for (StatisticViewDto stat : stats) {
-                eventsViews.put(Long.parseLong(stat.getUri().split("/", 0)[2]),
-                        stat.getHits());
+            if (!stats.isEmpty()) {
+                for (StatisticViewDto stat : stats) {
+                    eventsViews.put(Long.parseLong(stat.getUri().split("/", 0)[2]),
+                            stat.getHits());
+                }
             }
         }
+        return eventsViews;
     }
-    return eventsViews;
-}
 }
