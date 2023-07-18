@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Data
 @Entity
@@ -18,4 +19,11 @@ public class User {
     private Long id;
     private String email;
     private String name;
+    @ManyToMany
+    @JoinTable(name = "user_followers",
+            joinColumns = @JoinColumn(name = "follower_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private List<User> followers;
+    @ManyToMany(mappedBy = "followers")
+    private List<User> followees;
 }
