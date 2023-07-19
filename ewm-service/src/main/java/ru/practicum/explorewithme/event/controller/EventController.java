@@ -114,4 +114,20 @@ public class EventController {
                                                                     @Valid @RequestBody EventRequestStatusUpdateRequest updateRequest) {
         return eventService.changeEventRequestsStatus(userId, eventId, updateRequest);
     }
+
+    @GetMapping("/users/{userId}/followers/{followerId}/events")
+    public List<EventFullDto> findEventsBySubscriptionOfUser(@PathVariable Long userId,
+                                                             @PathVariable Long followerId,
+                                                             @RequestParam(required = false, defaultValue = "0") Integer size,
+                                                             @RequestParam(required = false, defaultValue = "10") Integer from) {
+        return eventService.findEventsBySubscriptionOfUser(userId, followerId, from, size);
+    }
+
+    @GetMapping("/users/followers/{followerId}/events")
+    public List<EventShortDto> findEventsByAllSubscriptions(@PathVariable Long followerId,
+                                                            @RequestParam(required = false, defaultValue = "NEW") String sort,
+                                                            @RequestParam(required = false, defaultValue = "0") Integer from,
+                                                            @RequestParam(required = false, defaultValue = "10") Integer size) {
+        return eventService.findEventsByAllSubscriptions(followerId, sort, from, size);
+    }
 }
