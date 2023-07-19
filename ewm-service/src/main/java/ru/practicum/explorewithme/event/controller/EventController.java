@@ -15,6 +15,8 @@ import ru.practicum.explorewithme.request.dto.ParticipationRequestDto;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -118,16 +120,16 @@ public class EventController {
     @GetMapping("/users/{userId}/followers/{followerId}/events")
     public List<EventFullDto> findEventsBySubscriptionOfUser(@PathVariable Long userId,
                                                              @PathVariable Long followerId,
-                                                             @RequestParam(required = false, defaultValue = "0") Integer size,
-                                                             @RequestParam(required = false, defaultValue = "10") Integer from) {
+                                                             @PositiveOrZero @RequestParam(required = false, defaultValue = "0") Integer from,
+                                                             @Positive @RequestParam(required = false, defaultValue = "10") Integer size) {
         return eventService.findEventsBySubscriptionOfUser(userId, followerId, from, size);
     }
 
     @GetMapping("/users/followers/{followerId}/events")
     public List<EventShortDto> findEventsByAllSubscriptions(@PathVariable Long followerId,
                                                             @RequestParam(required = false, defaultValue = "NEW") String sort,
-                                                            @RequestParam(required = false, defaultValue = "0") Integer from,
-                                                            @RequestParam(required = false, defaultValue = "10") Integer size) {
+                                                            @PositiveOrZero @RequestParam(required = false, defaultValue = "0") Integer from,
+                                                            @Positive @RequestParam(required = false, defaultValue = "10") Integer size) {
         return eventService.findEventsByAllSubscriptions(followerId, sort, from, size);
     }
 }
