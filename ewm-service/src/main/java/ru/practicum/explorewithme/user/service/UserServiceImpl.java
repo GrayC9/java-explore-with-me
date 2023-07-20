@@ -6,11 +6,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.explorewithme.exception.DataConflictException;
 import ru.practicum.explorewithme.exception.DataValidationException;
 import ru.practicum.explorewithme.exception.UserNotFoundException;
 import ru.practicum.explorewithme.user.dto.UserInDto;
 import ru.practicum.explorewithme.user.dto.UserMapper;
 import ru.practicum.explorewithme.user.dto.UserOutDto;
+import ru.practicum.explorewithme.user.dto.UserWithFollowersDto;
 import ru.practicum.explorewithme.user.model.User;
 import ru.practicum.explorewithme.user.repository.UserRepository;
 
@@ -58,6 +60,43 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findUserById(Long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("Пользователь с id" + userId + "не найден"));
+                .orElseThrow(() -> new UserNotFoundException("Пользователь с id " + userId + " не найден"));
+    }
+
+    @Override
+    @Transactional
+    public UserWithFollowersDto addFollower(Long userId, Long followerId) {
+        if (userId.equals(followerId)) {
+            throw new DataConflictException("Пользователь не может подписаться на себя");
+        }
+        User user = findUserById(userId);
+        User follower = findUserById(followerId);
+
+        if (user.getFollowers().contains(follower)) {
+            throw new DataConflictException("Пользователь с id " + followerId + " уже подписан на пользователя с id "
+                    + userId);
+        }
+        user.getFollowers().add(follower);
+        user = userRepository.save(user);
+        log.info("Пользователь с id {} подписался на пользователя с id {}", followerId, userId);
+        return UserMapper.toDtoWithFollowers(user);
+    }
+
+    @Transactional
+    @Override
+    public void deleteFollower(Long userId, Long followerId) {
+        if (userId.equals(followerId)) {
+            throw new DataConflictException("Пользователь не может быть подписан на себя");
+        }
+        User user = findUserById(userId);
+        User follower = findUserById(followerId);
+
+        if (!user.getFollowers().contains(follower)) {
+            throw new DataConflictException("Пользователь с id " + followerId + " не подписан на пользователя с id "
+                    + userId);
+        }
+        user.getFollowers().remove(follower);
+        log.info("Пользователь с id {} отписан от пользователя с id {}", followerId, userId);
+        userRepository.save(user);
     }
 }
