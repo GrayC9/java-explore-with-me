@@ -85,13 +85,15 @@
 
 ![ewm-statistics](https://github.com/MelTrevelyan/java-explore-with-me/assets/114815793/02596a84-32bb-418e-a1e4-10684d457586)
 
-## Инструкция по развёртыванию
+## Варианты запуска приложения
 
-Чтобы использовать приложение, необходимо:
+- Командой «docker-compose up» (Для запуска через докер);
 
-1. Склонировать репозиторий: https://github.com/MelTrevelyan/java-explore-with-me.git
-2. Перейти в консоли в папку проекта: `cd java-explore-with-me`
-3. Скомпилировать исходные файлы Java командой: `javac *.java`
+- С помощью IntelliJ IDEA:
+
+«main»: ewm-service\src\main\java\ru\practicum\explorewithme\EwmService -> "run";
+
+«stats»: statistics\stats-service\src\main\java\ru\practicum\explorewithme\StatsService -> "run"
 
 ---
 
