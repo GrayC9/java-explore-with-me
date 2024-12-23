@@ -1,6 +1,7 @@
 package ru.practicum.explorewithme.event.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -12,6 +13,7 @@ import ru.practicum.explorewithme.event.service.EventService;
 import ru.practicum.explorewithme.request.dto.EventRequestStatusUpdateRequest;
 import ru.practicum.explorewithme.request.dto.EventRequestStatusUpdateResult;
 import ru.practicum.explorewithme.request.dto.ParticipationRequestDto;
+import ru.practicum.explorewithme.utils.SortUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -106,22 +108,19 @@ public class EventController {
 
     //Public endpoints
     @GetMapping("/events")
-    public List<EventShortDto> findEventsByPublic(@RequestParam(required = false) String text,
-                                                  @RequestParam(required = false) List<Long> categories,
-                                                  @RequestParam(required = false) Boolean paid,
-                                                  @RequestParam(required = false) @DateTimeFormat(pattern = TIME_FORMAT) LocalDateTime rangeStart,
-                                                  @RequestParam(required = false) @DateTimeFormat(pattern = TIME_FORMAT) LocalDateTime rangeEnd,
-                                                  @RequestParam(required = false) Boolean onlyAvailable,
-                                                  @RequestParam(required = false) String sort,
-                                                  @RequestParam(required = false, defaultValue = "0") Integer from,
-                                                  @RequestParam(required = false, defaultValue = "10") Integer size,
-                                                  HttpServletRequest request) {
-        EventUserParam eventUserParam = new EventUserParam(text, categories, paid, rangeStart, rangeEnd, onlyAvailable,
-                sort, from, size);
+    public List<EventShortDto> findEventsByPublic(
+            @RequestParam(required = false) String filtering,
+            @RequestParam(required = false) Integer pageNumber,
+            @RequestParam(required = false) Integer pageSize,
+            @RequestParam(required = false) List<String> sort,
+            HttpServletRequest request
+    ) {
+        var sortt = SortUtils.by(sort);
+        var pageable = PageRequest.of(pageNumber, pageSize, sortt);
         StatisticInDto statisticInDto = new StatisticInDto(SERVICE_ID, request.getRequestURI(), request.getRemoteAddr(),
                 LocalDateTime.now());
         statisticClient.postHit(statisticInDto);
-        return eventService.findEventsByPublic(eventUserParam, request);
+        return eventService.findEventsByPublic(filtering, pageable, request);
     }
 
     @GetMapping("/events/{id}")

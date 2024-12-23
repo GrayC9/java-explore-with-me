@@ -26,6 +26,7 @@ import ru.practicum.explorewithme.request.model.RequestStatus;
 import ru.practicum.explorewithme.request.repository.RequestRepository;
 import ru.practicum.explorewithme.user.model.User;
 import ru.practicum.explorewithme.user.service.UserService;
+import ru.practicum.explorewithme.utils.FilteringUtils;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
@@ -231,44 +232,44 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventShortDto> findEventsByPublic(EventUserParam eventUserParam, HttpServletRequest request) {
-        Sort sort;
+    public List<EventShortDto> findEventsByPublic(String filtering, PageRequest pageRequest, HttpServletRequest request) {
         List<Event> events;
         Map<Long, Long> views;
-        sort = getEventSort(eventUserParam.getSort());
-        Pageable pageable = PageRequest.of(eventUserParam.getFrom() / eventUserParam.getSize(),
-                eventUserParam.getSize(), sort);
-        LocalDateTime checkedRangeStart = validateRangeTime(eventUserParam.getRangeStart(), eventUserParam.getRangeEnd());
-        Specification<Event> specification = ((root, query, criteriaBuilder) -> {
-            List<Predicate> predicates = new ArrayList<>();
-            predicates.add(criteriaBuilder.equal(root.get("state"), EventState.PUBLISHED));
-            if (eventUserParam.getText() != null) {
-                predicates.add(criteriaBuilder.or(criteriaBuilder.like(criteriaBuilder.lower(root.get("annotation")),
-                                "%" + eventUserParam.getText().toLowerCase() + "%"),
-                        criteriaBuilder.like(criteriaBuilder.lower(root.get("description")),
-                                "%" + eventUserParam.getText().toLowerCase() + "%")));
-            }
-            if (eventUserParam.getCategories() != null) {
-                CriteriaBuilder.In<Long> categoriesClause = criteriaBuilder.in(root.get("category"));
-                for (Long category : eventUserParam.getCategories()) {
-                    categoriesClause.value(category);
-                }
-                predicates.add(categoriesClause);
-            }
-            if (eventUserParam.getPaid() != null) {
-                predicates.add(criteriaBuilder.equal(root.get("isPaid"), eventUserParam.getPaid()));
-            }
-            predicates.add(criteriaBuilder.greaterThan(root.get("eventDate"), checkedRangeStart));
-            if (eventUserParam.getRangeEnd() != null) {
-                predicates.add(criteriaBuilder.lessThan(root.get("eventDate"), eventUserParam.getRangeEnd()));
-            }
-            if (eventUserParam.getOnlyAvailable() != null) {
-                predicates.add(criteriaBuilder.lessThan(root.get("confirmedRequests"), root.get("participantLimit")));
-            }
-            return criteriaBuilder.and(predicates.toArray(Predicate[]::new));
-        }
-        );
-        events = eventRepository.findAll(specification, pageable).getContent();
+//        sort = getEventSort(eventUserParam.getSort());
+//        Pageable pageable = PageRequest.of(eventUserParam.getFrom() / eventUserParam.getSize(),
+//                eventUserParam.getSize(), sort);
+//        LocalDateTime checkedRangeStart = validateRangeTime(eventUserParam.getRangeStart(), eventUserParam.getRangeEnd());
+//        Specification<Event> specification = ((root, query, criteriaBuilder) -> {
+//            List<Predicate> predicates = new ArrayList<>();
+//            predicates.add(criteriaBuilder.equal(root.get("state"), EventState.PUBLISHED));
+//            if (eventUserParam.getText() != null) {
+//                predicates.add(criteriaBuilder.or(criteriaBuilder.like(criteriaBuilder.lower(root.get("annotation")),
+//                                "%" + eventUserParam.getText().toLowerCase() + "%"),
+//                        criteriaBuilder.like(criteriaBuilder.lower(root.get("description")),
+//                                "%" + eventUserParam.getText().toLowerCase() + "%")));
+//            }
+//            if (eventUserParam.getCategories() != null) {
+//                CriteriaBuilder.In<Long> categoriesClause = criteriaBuilder.in(root.get("category"));
+//                for (Long category : eventUserParam.getCategories()) {
+//                    categoriesClause.value(category);
+//                }
+//                predicates.add(categoriesClause);
+//            }
+//            if (eventUserParam.getPaid() != null) {
+//                predicates.add(criteriaBuilder.equal(root.get("isPaid"), eventUserParam.getPaid()));
+//            }
+//            predicates.add(criteriaBuilder.greaterThan(root.get("eventDate"), checkedRangeStart));
+//            if (eventUserParam.getRangeEnd() != null) {
+//                predicates.add(criteriaBuilder.lessThan(root.get("eventDate"), eventUserParam.getRangeEnd()));
+//            }
+//            if (eventUserParam.getOnlyAvailable() != null) {
+//                predicates.add(criteriaBuilder.lessThan(root.get("confirmedRequests"), root.get("participantLimit")));
+//            }
+//            return criteriaBuilder.and(predicates.toArray(Predicate[]::new));
+//        }
+//        );
+        var spec = FilteringUtils.<Event>getFilter(filtering);
+        events = eventRepository.findAll(spec, pageRequest).getContent();
         views = eventStatService.getEventsViews(events.stream().map(Event::getId).collect(Collectors.toList()));
         log.info("Выполнен публичный поиск опубликованных событий");
         return EventMapper.toShortDtos(events, views);

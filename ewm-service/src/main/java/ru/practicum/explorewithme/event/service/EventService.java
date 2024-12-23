@@ -1,5 +1,6 @@
 package ru.practicum.explorewithme.event.service;
 
+import org.springframework.data.domain.PageRequest;
 import ru.practicum.explorewithme.event.dto.*;
 import ru.practicum.explorewithme.event.model.Event;
 import ru.practicum.explorewithme.request.dto.EventRequestStatusUpdateRequest;
@@ -23,7 +24,7 @@ public interface EventService {
 
     List<EventFullDto> findEventsByAdmin(EventAdminParam eventAdminParam);
 
-    List<EventShortDto> findEventsByPublic(EventUserParam eventUserParam, HttpServletRequest request);
+    List<EventShortDto> findEventsByPublic(String filtering, PageRequest pageRequest, HttpServletRequest request);
 
     EventFullDto findPublishedEventById(Long eventId, HttpServletRequest request);
 
