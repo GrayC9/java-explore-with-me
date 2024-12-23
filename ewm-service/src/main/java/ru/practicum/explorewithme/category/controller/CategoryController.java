@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class CategoryController {
+public class CategoryController { 
 
     private final CategoryService categoryService;
 
