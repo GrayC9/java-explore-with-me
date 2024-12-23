@@ -86,18 +86,27 @@ public class EventController {
         return eventService.findEventsByAllSubscriptions(followerId, sort, from, size);
     }
 
-    //Admin endpoints
+//    //Admin endpoints
     @GetMapping("/admin/events")
-    public List<EventFullDto> findEventsByAdmin(@RequestParam(required = false) List<Long> users,
-                                                @RequestParam(required = false) List<String> states,
-                                                @RequestParam(required = false) List<Long> categories,
-                                                @RequestParam(required = false) @DateTimeFormat(pattern = TIME_FORMAT) LocalDateTime rangeStart,
-                                                @RequestParam(required = false) @DateTimeFormat(pattern = TIME_FORMAT) LocalDateTime rangeEnd,
-                                                @RequestParam(required = false, defaultValue = "0") Integer from,
-                                                @RequestParam(required = false, defaultValue = "10") Integer size) {
-        EventAdminParam eventAdminParam = new EventAdminParam(users, states, categories, rangeStart, rangeEnd, from, size);
-        return eventService.findEventsByAdmin(eventAdminParam);
-    }
+    public List<EventFullDto> findEventsByAdmin(
+        @RequestParam(required = false, name = "title") String title,
+        @RequestParam(required = false, name = "paid") Boolean paid
+) {
+        log.info("title : {}", title);
+        log.info("paid : {}", paid);
+    return eventService.findEventsByAdmin(title, paid);
+}
+//    @GetMapping("/admin/events")
+//    public List<EventFullDto> findEventsByAdmin(@RequestParam(required = false) List<Long> users,
+//                                                @RequestParam(required = false) List<String> states,
+//                                                @RequestParam(required = false) List<Long> categories,
+//                                                @RequestParam(required = false) @DateTimeFormat(pattern = TIME_FORMAT) LocalDateTime rangeStart,
+//                                                @RequestParam(required = false) @DateTimeFormat(pattern = TIME_FORMAT) LocalDateTime rangeEnd,
+//                                                @RequestParam(required = false, defaultValue = "0") Integer from,
+//                                                @RequestParam(required = false, defaultValue = "10") Integer size) {
+//        EventAdminParam eventAdminParam = new EventAdminParam(users, states, categories, rangeStart, rangeEnd, from, size);
+//        return eventService.findEventsByAdmin(eventAdminParam);
+//    }
 
     @PatchMapping(value = "/admin/events/{eventId}")
     public EventFullDto adminUpdateEvent(@PathVariable Long eventId,

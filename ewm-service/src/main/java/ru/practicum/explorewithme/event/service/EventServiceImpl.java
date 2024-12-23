@@ -185,46 +185,22 @@ public class EventServiceImpl implements EventService {
         log.info("Событие с id {} обновлено администратором", eventId);
         return EventMapper.toEventFullDtoWithViews(updated, views);
     }
-
     @Override
-    public List<EventFullDto> findEventsByAdmin(EventAdminParam eventAdminParam) {
+    public List<EventFullDto> findEventsByAdmin(String title, Boolean paid) {
         List<Event> events;
         Map<Long, Long> views;
-        Pageable pageable = PageRequest.of(eventAdminParam.getFrom() / eventAdminParam.getSize(), eventAdminParam.getSize());
         Specification<Event> specification = ((root, query, criteriaBuilder) -> {
-            List<Predicate> predicates = new ArrayList<>();
-            if (eventAdminParam.getUsers() != null) {
-                CriteriaBuilder.In<Long> usersClause = criteriaBuilder.in(root.get("initiator"));
-                for (Long user : eventAdminParam.getUsers()) {
-                    usersClause.value(user);
-                }
-                predicates.add(usersClause);
-            }
-            if (eventAdminParam.getStates() != null) {
-                List<EventState> states = getEventStates(eventAdminParam.getStates());
-                CriteriaBuilder.In<EventState> statesClause = criteriaBuilder.in(root.get("state"));
-                for (EventState state : states) {
-                    statesClause.value(state);
-                }
-                predicates.add(statesClause);
-            }
-            if (eventAdminParam.getCategories() != null) {
-                CriteriaBuilder.In<Long> categoriesClause = criteriaBuilder.in(root.get("category"));
-                for (Long category : eventAdminParam.getCategories()) {
-                    categoriesClause.value(category);
-                }
-                predicates.add(categoriesClause);
-            }
-            if (eventAdminParam.getRangeStart() != null) {
-                predicates.add(criteriaBuilder.greaterThan(root.get("eventDate"), eventAdminParam.getRangeStart()));
-            }
-            if (eventAdminParam.getRangeEnd() != null) {
-                predicates.add(criteriaBuilder.lessThan(root.get("eventDate"), eventAdminParam.getRangeEnd()));
-            }
-            return criteriaBuilder.and(predicates.toArray(Predicate[]::new));
-        }
+
+            var titleCondition = Objects.isNull(title)
+                    ? criteriaBuilder.conjunction()
+                    : criteriaBuilder.like(root.get("title"), "%" + title + "%");
+
+            var paidCondition = Objects.isNull(paid)
+                    ? criteriaBuilder.conjunction()
+                    : criteriaBuilder.equal(root.get("isPaid"), paid);
+            return criteriaBuilder.and(titleCondition, paidCondition);        }
         );
-        events = eventRepository.findAll(specification, pageable).getContent();
+        events = eventRepository.findAll(specification);
         views = eventStatService.getEventsViews(events.stream().map(Event::getId).collect(Collectors.toList()));
         log.info("Выполнен поиск событий для администратора");
         return EventMapper.toFullDtos(events, views);

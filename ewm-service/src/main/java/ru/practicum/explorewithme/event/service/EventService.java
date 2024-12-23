@@ -21,7 +21,8 @@ public interface EventService {
 
     EventFullDto adminUpdateEvent(Long eventId, UpdateEventAdminRequest eventUpdate);
 
-    List<EventFullDto> findEventsByAdmin(EventAdminParam eventAdminParam);
+    List<EventFullDto> findEventsByAdmin(String title, Boolean paid);
+//    List<EventFullDto> findEventsByAdmin(EventAdminParam eventAdminParam);
 
     List<EventShortDto> findEventsByPublic(EventUserParam eventUserParam, HttpServletRequest request);
 
